@@ -1,4 +1,4 @@
-const { resolve, extname } = require('path');
+const { resolve, extname, relative } = require('path');
 const { readdir, writeFile } = require('fs').promises;
 const getColors = require('get-image-colors');
 const { IMG_EXTENSIONS, DATA_DIR, RESULTS_FILENAME } = require('./constants');
@@ -25,16 +25,15 @@ function isImage(path) {
 async function averageRGB(path) {
     const colors = await getColors(path);
 
-    const [sumR, sumG, sumB] = colors.reduce(([r, g, b], color) => {
-        const [cR, cG, cB] = color.rgb();
-        return [r + cR, g + cG, b + cB];
-    }, [0, 0, 0]);
+    const [sumR, sumG, sumB] = colors.reduce(
+        ([r, g, b], color) => {
+            const [cR, cG, cB] = color.rgb();
+            return [r + cR, g + cG, b + cB];
+        },
+        [0, 0, 0],
+    );
 
-    return [
-        sumR / colors.length,
-        sumG / colors.length,
-        sumB / colors.length,
-    ];
+    return [sumR / colors.length, sumG / colors.length, sumB / colors.length];
 }
 
 (async () => {
@@ -44,12 +43,14 @@ async function averageRGB(path) {
 
     for await (const path of getFiles(DATA_DIR)) {
         if (isImage(path)) {
-            data.push([path, ...await averageRGB(path)]);
+            data.push([relative(DATA_DIR, path), ...(await averageRGB(path))]);
             process.stdout.write('.');
             ++count;
         }
     }
 
     await writeFile(RESULTS_FILENAME, JSON.stringify(data));
-    console.log(`\nProcessing ${count} files done in ${(Date.now() - t) / 1000} s`);
+    console.log(
+        `\nProcessing ${count} files done in ${(Date.now() - t) / 1000} s`,
+    );
 })();

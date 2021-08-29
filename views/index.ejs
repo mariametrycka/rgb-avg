@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+
+        <style>
+            .colorBox {
+                width: 100px;
+                height: 100px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div
+            class="colorBox"
+            style="
+                background-color: rgb(
+                    <%= color.r %>,
+                    <%= color.g %>,
+                    <%= color.b %>
+                );
+            "
+        ></div>
+
+        <div><%= color.r %>, <%= color.g %>, <%= color.b %></div>
+
+        <% results.forEach(result => { %>
+        <div>
+            <img src="/data/<%= result.path %>" />
+
+            <div>
+                <%= result.distance %> <%= result.path %> <%= result.r %>, <%=
+                result.g %>, <%= result.b %>
+            </div>
+        </div>
+        <% }); %>
+    </body>
+</html>
