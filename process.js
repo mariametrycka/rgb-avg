@@ -39,18 +39,18 @@ async function averageRGB(path) {
 (async () => {
     const data = [];
     const t = Date.now();
-    let count = 0;
 
     for await (const path of getFiles(DATA_DIR)) {
         if (isImage(path)) {
             data.push([relative(DATA_DIR, path), ...(await averageRGB(path))]);
             process.stdout.write('.');
-            ++count;
         }
     }
 
     await writeFile(RESULTS_FILENAME, JSON.stringify(data));
     console.log(
-        `\nProcessing ${count} files done in ${(Date.now() - t) / 1000} s`,
+        `\nProcessing ${data.length} files done in ${
+            (Date.now() - t) / 1000
+        } s`,
     );
 })();
